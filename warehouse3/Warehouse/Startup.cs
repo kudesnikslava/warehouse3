@@ -60,6 +60,7 @@ namespace Warehouse
 				//TODO Почему здесь нет CustomerUpdateRequest. Маппинг в контроллере есть в методе update
 			});
 
+			services.AddSingleton(typeof(IDiskCache), typeof(RedisDiskCache));
 	        services.AddSingleton<CustomersRepository>();
 			services.AddSingleton<EntitiesRepository>();
 			services.AddSingleton<DataManager>();

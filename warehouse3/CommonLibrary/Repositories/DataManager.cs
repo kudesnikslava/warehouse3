@@ -13,13 +13,13 @@ namespace CommonLibrary.Repositories
 	    private CustomersRepository _customersRepository;
 	    private EntitiesRepository _entitiesRepository;
 
-		private IDistributedCache _distributedCache;
+		private IDiskCache _cache;
 
-		public DataManager(CustomersRepository customersRepository, EntitiesRepository entitiesRepository, IDistributedCache distributedCache)
+		public DataManager(CustomersRepository customersRepository, EntitiesRepository entitiesRepository, IDiskCache cache)
 		{
 			_customersRepository = customersRepository;
 			_entitiesRepository = entitiesRepository;
-			_distributedCache = distributedCache;
+			_cache = cache;
 		}
 
 	    #region Customers
@@ -30,9 +30,19 @@ namespace CommonLibrary.Repositories
 		    return _customersRepository.GetAll().Result;
 	    }
 
-	    public Customer GetCustomerById(string customerId)
+	    public async Task<Customer> GetCustomerById(string customerId)
 	    {
-		    return _customersRepository.GetById(customerId).Result;
+		    Customer customer = _cache.GetCustomerById(customerId);
+		    if (customer != null)
+			    return customer;
+
+		    customer = await _customersRepository.GetById(customerId);
+		    if (customer == null)
+			    return null;
+
+		    _cache.SetCustomer(customer);
+
+		    return customer;
 	    }
 
 	    public async Task CreateCustomer(Customer newCustomer)

@@ -53,7 +53,7 @@ namespace Warehouse.Controllers
 		[ProducesResponseType(typeof(NotFoundErrorResponse), 404)]
 		public IActionResult GetCustomerById([FromRoute]string customerId)
 		{
-			Customer customer = _dataManager.GetCustomerById(customerId);
+			Customer customer = _dataManager.GetCustomerById(customerId).Result;
 			if (customer == null)
 				return NotFound(new NotFoundErrorResponse($"customer id: {customerId}"));
 
